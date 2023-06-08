@@ -19,7 +19,8 @@ from .typing import ForeFrontResponse, AccountData
 class Account:
     @staticmethod
     def create(proxy: Optional[str] = None, logging: bool = False) -> AccountData:
-        proxies = {'http': 'http://' + proxy, 'https': 'http://' + proxy} if proxy else False
+        proxies = {'http': 'http://' + proxy,
+                   'https': 'http://' + proxy} if proxy else False
 
         start = time()
 
@@ -64,7 +65,8 @@ class Account:
             sleep(5)
             message_id = mail_client.message_list()[0]['id']
             message = mail_client.message(message_id)
-            verification_url = findall(r'https:\/\/clerk\.forefront\.ai\/v1\/verify\?token=\w.+', message["text"])[0]
+            verification_url = findall(
+                r'https:\/\/clerk\.forefront\.ai\/v1\/verify\?token=\w.+', message["text"])[0]
             if verification_url:
                 break
 
@@ -72,7 +74,8 @@ class Account:
             print(verification_url)
         client.get(verification_url)
 
-        response = client.get('https://clerk.forefront.ai/v1/client?_clerk_js_version=4.38.4').json()
+        response = client.get(
+            'https://clerk.forefront.ai/v1/client?_clerk_js_version=4.38.4').json()
         session_data = response['response']['sessions'][0]
 
         user_id = session_data['user']['id']
@@ -103,9 +106,13 @@ class StreamingCompletion:
         if not chat_id:
             chat_id = str(uuid4())
 
-        proxies = {'http': 'http://' + proxy, 'https': 'http://' + proxy} if proxy else None
-        base64_data = b64encode((account_data.user_id + default_persona + chat_id).encode()).decode()
-        encrypted_signature = StreamingCompletion.__encrypt(base64_data, account_data.session_id)
+        proxies = {'http': 'http://' + proxy,
+                   'https': 'http://' + proxy} if proxy else None
+        base64_data = b64encode(
+            (account_data.user_id + default_persona + chat_id).encode()).decode()
+        encrypted_signature = StreamingCompletion.__encrypt(
+            base64_data, account_data.session_id)
+        print(encrypted_signature)
 
         headers = {
             'authority': 'chat-server.tenant-forefront-default.knative.chi.coreweave.com',
@@ -143,6 +150,7 @@ class StreamingCompletion:
             json=json_data,
             stream=True,
         ).iter_lines():
+            print(chunk)
             if b'finish_reason":null' in chunk:
                 data = loads(chunk.decode('utf-8').split('data: ')[1])
                 token = data['choices'][0]['delta'].get('content')
@@ -169,7 +177,8 @@ class StreamingCompletion:
         hash_key = hashlib.sha256(key.encode()).digest()
         iv = get_random_bytes(16)
         cipher = AES.new(hash_key, AES.MODE_CBC, iv)
-        encrypted_data = cipher.encrypt(StreamingCompletion.__pad_data(data.encode()))
+        encrypted_data = cipher.encrypt(
+            StreamingCompletion.__pad_data(data.encode()))
         return iv.hex() + encrypted_data.hex()
 
     @staticmethod

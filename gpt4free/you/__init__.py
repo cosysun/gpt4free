@@ -38,7 +38,8 @@ class Completion:
         if chat is None:
             chat = []
 
-        proxies = {'http': 'http://' + proxy, 'https': 'http://' + proxy} if proxy else {}
+        proxies = {'http': 'http://' + proxy,
+                   'https': 'http://' + proxy} if proxy else {}
 
         client = Session(client_identifier='chrome_108')
         client.headers = Completion.__get_headers()
@@ -75,16 +76,19 @@ class Completion:
         ).group()
         # slots                   = findall(r"slots\ndata: (.*)\n\nevent", response.text)[0]
 
-        text = ''.join(re.findall(r'{\"youChatToken\": \"(.*?)\"}', response.text))
+        text = ''.join(re.findall(
+            r'{\"youChatToken\": \"(.*?)\"}', response.text))
 
         extra = {
             'youChatSerpResults': json.loads(you_chat_serp_results),
             # 'slots'                   : loads(slots)
         }
 
-        response = YouResponse(text=text.replace('\\n', '\n').replace('\\\\', '\\').replace('\\"', '"'))
+        response = YouResponse(text=text.replace(
+            '\\n', '\n').replace('\\\\', '\\').replace('\\"', '"'))
         if include_links:
-            response.links = json.loads(third_party_search_results)['search']['third_party_search_results']
+            response.links = json.loads(third_party_search_results)[
+                'search']['third_party_search_results']
 
         if detailed:
             response.extra = extra
@@ -120,7 +124,9 @@ class Completion:
         retry_on_exception=lambda e: isinstance(e, RequestException),
     )
     def __make_request(client: Session, params: dict) -> Response:
-        response = client.get(f'https://you.com/api/streamingSearch', params=params)
+        response = client.get(
+            'https://you.com/api/streamingSearch', params=params)
+        print(response)
         if 'youChatToken' not in response.text:
             print('retry')
             raise RequestException('Unable to get the response from server')

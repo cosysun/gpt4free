@@ -1,16 +1,26 @@
+from gpt4free import forefront
+from gpt4free import you
+import streamlit as st
 import os
 import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), os.path.pardir))
-
-import streamlit as st
-from gpt4free import you
 
 
 def get_answer(question: str) -> str:
     # Set cloudflare clearance cookie and get answer from GPT-4 model
     try:
         result = you.Completion.create(prompt=question)
+        # # create an account
+        # account_data = forefront.Account.create(logging=False)
+
+        # # get a response
+        # for response in forefront.StreamingCompletion.create(
+        #     account_data=account_data,
+        #     prompt='hello world',
+        #     model='gpt-4'
+        # ):
+        #     return response.choices[0].text
 
         return result.text
 
@@ -35,7 +45,8 @@ st.set_page_config(
 st.header('GPT4free GUI')
 
 # Add text area for user input and button to get answer
-question_text_area = st.text_area('🤖 Ask Any Question :', placeholder='Explain quantum computing in 50 words')
+question_text_area = st.text_area(
+    '🤖 Ask Any Question :', placeholder='Explain quantum computing in 50 words')
 if st.button('🧠 Think'):
     answer = get_answer(question_text_area)
     escaped = answer.encode('utf-8').decode('unicode-escape')
