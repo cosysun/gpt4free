@@ -14,6 +14,6 @@ COPY . /root/gpt4free
 
 WORKDIR /root/gpt4free
 
-CMD ["uvicorn", "--host 0.0.0.0", "main:app]
+CMD ["uvicorn", "--host 0.0.0.0", "main:app"]
   
 EXPOSE 8501
