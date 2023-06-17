@@ -2,6 +2,7 @@ from typing import Union
 
 from fastapi import FastAPI
 from gpt4free import you
+from gpt4free import deepai
 from pydantic import BaseModel
 
 
@@ -30,7 +31,8 @@ async def ai_ask(item: Item):
     if item.lang == "zh-CN":
         summary = "请使用中文，帮我整理这段文字，要求要点明确，并顺序列出："
 
-    result = you.Completion.create(prompt=summary + item.content)
+    # result = you.Completion.create(prompt=summary + item.content)
+    result = deepai.Completion.create(prompt=summary + item.content)
     answer = result.text
     escaped = answer.encode('utf-8').decode('unicode-escape')
     return {"answer": escaped}
